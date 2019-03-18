@@ -1,2 +1,2 @@
-# facial-recognition
-Facial Recognition in Real-Time
+# Facial Recognition
+Real-Time face-recognition system using Tensorflow and OpenCV in Python.
