@@ -15,11 +15,11 @@ def get_embeddings(img):
     emb = model.predict(img.reshape(1, *img.shape))
     return emb
 
-def cosine_distance(org, cod):
-    return cod.dot(org)/(np.linalg.norm(org)*np.linalg.norm(cod, axis=-1))
+def euclidean_distance(org, cod):
+    return np.linalg.norm(cod-org, axis=-1)
 
 def recognize_face(face):
     emb = model.predict(face.reshape(1, *face.shape))[0]
-    dists = cosine_distance(emb, face_embs)
-    best_dist = dists.argmax()
-    return names[best_dist] if dists[best_dist]>0.7 else None
+    dists = euclidean_distance(emb, face_embs)
+    best_dist = dists.argmin()
+    return names[best_dist] if dists[best_dist]<0.8 else None
