@@ -22,4 +22,4 @@ def recognize_face(face):
     emb = model.predict(face.reshape(1, *face.shape))[0]
     dists = euclidean_distance(emb, face_embs)
     best_dist = dists.argmin()
-    return names[best_dist] if dists[best_dist]<0.8 else None
+    return names[best_dist] if dists[best_dist]<0.75 else None

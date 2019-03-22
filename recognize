@@ -2,17 +2,7 @@
 import numpy as np
 import cv2
 from utils.mlcode import recognize_face
-
-face_cascade = cv2.CascadeClassifier()
-face_cascade.load("/home/beast/opencv/data/haarcascades/haarcascade_frontalface_default.xml")
-
-def preprocess_face(face):
-    face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
-    return cv2.resize(face, (96, 96), interpolation=cv2.INTER_LINEAR)/255.
-
-def get_face_coords(frame):
-    face_coords = face_cascade.detectMultiScale(frame)
-    return face_coords
+from utils.face_fetch import fetch_face_coords, align_faces, preprocess_face
 
 if __name__=='__main__':
     cap = cv2.VideoCapture(0)
@@ -20,14 +10,16 @@ if __name__=='__main__':
     coords = None
     while True:
         ret, frame = cap.read()
-        coords = get_face_coords(frame)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        coords = fetch_face_coords(gray)
         if len(coords)==0:
             cv2.putText(frame, 'No face detected!', (100,400), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0,0,255), 2)
-        for (x, y, w, h) in coords:
-            cv2.rectangle(frame,(x, y), (x+w, y+h), (255,0,0),2)
-            face = preprocess_face(frame[y:y+h, x:x+w])
+        for rect in coords:
+            (x, y, w, h) = rect.left(), rect.top(), rect.width(), rect.height()
+            face = preprocess_face(align_faces(frame, gray, rect))
             nameId = recognize_face(face) or 'Unknown'
+            cv2.rectangle(frame,(x, y), (x+w, y+h), (255,0,0),2)
             cv2.putText(frame, nameId, (min(x+2, 640),max(y-2, 0)), cv2.FONT_HERSHEY_SIMPLEX,
                         0.6, (255,0,0), 2)
         cv2.putText(frame, "press 'q' to quit!", (10,470), cv2.FONT_HERSHEY_SIMPLEX,
