@@ -42,7 +42,7 @@ def get_from_cam():
         ret, frame = cap.read()
         img = np.copy(frame)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        coords = fetch_face_coords(frame)
+        coords = fetch_face_coords(gray)
         if len(coords)!=0:
             rect = coords[0]
             x, y, w, h = rect.left(), rect.top(), rect.width(), rect.height()
@@ -67,8 +67,9 @@ def get_from_image():
         return None
     frame = cv2.imread(filename)
     frame = cv2.resize(frame, (640, int(640.*frame.shape[0]/frame.shape[1])))
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     img = np.copy(frame)
-    coords = fetch_face_coords(frame)
+    coords = fetch_face_coords(gray)
     if len(coords)!=0:
         rect = coords[0]
         x, y, w, h = rect.left(), rect.top(), rect.width(), rect.height()
